@@ -1,0 +1,11 @@
+diff --git a/src/devices/machine/upd7261.cpp b/src/devices/machine/upd7261.cpp
+index 02f45c96..33db2dbe 100644
+--- a/src/devices/machine/upd7261.cpp
++++ b/src/devices/machine/upd7261.cpp
+@@ -729,5 +729,5 @@ unsigned upd7261_device::specify::stp(unsigned cylinders) const
+ 	 * Example for a 10MHz clock gives a range of stepping values from
+ 	 * 2.11ms to 33.76ms; formula seems incorrect by a factor of 10?
+ 	 */
+-	return (16 - (mode & SM_STP)) * 21100 * cylinders;
++	return (16 - (mode & SM_STP)) * 2110 * cylinders;
+ }

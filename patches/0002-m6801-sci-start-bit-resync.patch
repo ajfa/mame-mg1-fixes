@@ -1,0 +1,51 @@
+diff --git a/src/devices/cpu/m6800/m6801.cpp b/src/devices/cpu/m6800/m6801.cpp
+index ba32699c..2148021f 100644
+--- a/src/devices/cpu/m6800/m6801.cpp
++++ b/src/devices/cpu/m6800/m6801.cpp
+@@ -1221,6 +1221,26 @@ TIMER_CALLBACK_MEMBER(m6801_cpu_device::sci_tick)
+ 
+ void m6801_cpu_device::sci_clock_internal(u8 divider)
+ {
++	/*
++	 * Resynchronise the receiver on the leading edge of a start bit. The real
++	 * SCI oversamples the input and starts a fresh bit period when it sees the
++	 * line go low, so every sample lands near the middle of a bit cell. Without
++	 * this the sampling point keeps whatever phase the free-running prescaler
++	 * had, which lands on a bit boundary sooner or later and corrupts the data
++	 * whenever the sender's bit rate is not exactly the receiver's.
++	 */
++	if (m_rxbits == M6801_SERIAL_START && (m_trcsr & M6801_TRCSR_RE) && !(m_trcsr & M6801_TRCSR_WU))
++	{
++		int const rx = m6801_rx();
++
++		if (rx == 0 && m_sci_rx_last == 1)
++			m_sci_clocks = divider - (divider / 2);
++
++		m_sci_rx_last = rx;
++	}
++	else
++		m_sci_rx_last = 1;
++
+ 	m_sci_clocks++;
+ 
+ 	if (m_sci_clocks >= divider)
+@@ -1393,6 +1413,7 @@ void m6801_cpu_device::device_start()
+ 	save_item(NAME(m_trcsr_read_rdrf));
+ 	save_item(NAME(m_tx));
+ 	save_item(NAME(m_sci_clocks));
++	save_item(NAME(m_sci_rx_last));
+ 	save_item(NAME(m_use_ext_serclock));
+ 
+ 	save_item(NAME(m_latch09));
+diff --git a/src/devices/cpu/m6800/m6801.h b/src/devices/cpu/m6800/m6801.h
+index 98f8e5c0..65864e21 100644
+--- a/src/devices/cpu/m6800/m6801.h
++++ b/src/devices/cpu/m6800/m6801.h
+@@ -163,6 +163,7 @@ protected:
+ 
+ 	u8 m_trcsr, m_rmcr, m_rdr, m_tdr, m_rsr, m_tshr;
+ 	int m_rxbits, m_txbits, m_txstate, m_trcsr_read_tdre, m_trcsr_read_orfe, m_trcsr_read_rdrf, m_tx, m_sci_clocks;
++	int m_sci_rx_last = 1;
+ 	bool m_use_ext_serclock;
+ 
+ 	u8 m_latch09;
