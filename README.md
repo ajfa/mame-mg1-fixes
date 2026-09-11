@@ -62,16 +62,28 @@ A build cut down to this one machine is enough to exercise them:
 
     make SUBTARGET=mg1 SOURCES=src/mame/mg1/mg1.cpp
 
-## Notes
+## The machine these came from
 
-Two things that are not bugs, written down because they cost time to find.
+Two documents in [`docs/`](docs), written while doing it:
 
-The disk goes on the **second** hard disk slot. The MG-1 addresses its drive as
+- **[Running 42nix 2.6 on the emulated MG-1](docs/running-42nix.md)** - where
+  the ROMs and the disk image are published, how to assemble the ROM set MAME
+  expects, the drive geometry `chdman` needs, the command line, logging in and
+  shutting down cleanly, and how to skip the boot time `fsck`.
+- **[What is on the disk](docs/whats-on-the-disk.md)** - the filesystems and
+  accounts, Whitechapel's Oriel window system, the 39 programs in `/usr/wcw`
+  including which graphics demos work and which do not, the C compiler, the
+  manual pages and the games.
+
+Two things from there are worth repeating here, because both look like
+emulation faults and are not.
+
+**The disk goes on the second hard disk slot.** The MG-1 addresses its drive as
 unit 1 of the uPD7261, so `-hard1` gets `Hard disk error: Drive not ready` from
 the system ROM and `-hard2` boots. 42nix says the same thing on the way up:
 `hd0 at upd0 slave 1`.
 
-The driver's `TODO: mouse` is stale. The IOP reads the mouse fifty times a
+**The driver's `TODO: mouse` is stale.** The IOP reads the mouse fifty times a
 second, keeps the pointer position in the mailbox it shares with the host and
 programs the cursor counters; the pointer walks the screen and stops at the
 edge on its own. What is needed is starting MAME with `-mouse`, which defaults
