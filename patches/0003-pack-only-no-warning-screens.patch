@@ -1,0 +1,9 @@
+diff --git a/src/mame/mg1/mg1.cpp b/src/mame/mg1/mg1.cpp
+--- a/src/mame/mg1/mg1.cpp
++++ b/src/mame/mg1/mg1.cpp
+@@ -620,4 +620,4 @@ ROM_END
+ } // anonymous namespace
+
+ /*   YEAR  NAME  PARENT  COMPAT  MACHINE  INPUT  CLASS      INIT        COMPANY                       FULLNAME  FLAGS */
+-COMP(1984, mg1,  0,      0,      mg1,     mg1,   mg1_state, empty_init, "Whitechapel Computer Works", "MG-1",   MACHINE_NOT_WORKING)
++COMP(1984, mg1,  0,      0,      mg1,     mg1,   mg1_state, empty_init, "Whitechapel Computer Works", "MG-1",   0)

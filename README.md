@@ -56,6 +56,10 @@ where before roughly one character in thirty was wrong.
     git apply /path/to/patches/0001-upd7261-datasheet-step-rate.patch
     git apply /path/to/patches/0002-m6801-sci-start-bit-resync.patch
 
+And, for an unattended run only, see the section below:
+
+    git apply /path/to/patches/0003-pack-only-no-warning-screens.patch
+
 `patch -p1 < ...` works as well.
 
 A build cut down to this one machine is enough to exercise them:
@@ -90,11 +94,22 @@ edge on its own. What is needed is starting MAME with `-mouse`, which defaults
 to off. Note that the IOP scales the delta by shifting right, so injecting
 steps of two or three counts per poll moves nothing and looks like a fault.
 
-## Not included
+## A third patch, for unattended runs only
 
-The driver is marked `MACHINE_NOT_WORKING`. With both fixes the machine boots
-42nix, the keyboard is reliable and the mouse moves the pointer, but clearing
-that flag is the driver author's call, so it is not part of these patches.
+`patches/0003-pack-only-no-warning-screens.patch` is not a fix and is not meant
+for upstream. The driver is marked `MACHINE_NOT_WORKING`, and with both fixes
+above the machine boots 42nix, the keyboard is reliable and the mouse moves the
+pointer; whether that flag should come off is the driver author's call, so the
+two fixes leave it alone.
+
+What the flag costs a harness is the warning screen MAME shows before it starts,
+which waits for a keypress that a run starting on its own cannot answer. There
+is no command line option for that screen: `-skip_gameinfo` covers the machine
+information screen before it, and `skip_warnings` in `ui.ini` only suppresses
+repeats, and only for a few days. This patch clears the flag so the screen never
+appears.
+
+Apply it only for that. On a tree meant for development, leave it out.
 
 ## Licence
 
